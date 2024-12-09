@@ -1,44 +1,63 @@
-name: Build APK
 
-env:
-  main_project_module: app
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.nin0dev.vendroid">
 
-on:
+    <uses-permission android:name="android.permission.INTERNET" />
 
-  push:
-    branches:
-      - '*'
-      - '!main'
-  pull_request:
-  merge_group:
-  workflow_dispatch:
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="34">
+        <activity
+            android:name=".RecoveryActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|layoutDirection"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
 
-jobs:
-  build:
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-    runs-on: ubuntu-latest
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
-    steps:
-      - uses: actions/checkout@v4
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
 
-      - name: Set Up JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          cache: 'gradle'
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:host="discord.com" />
+                <data android:host="*.discord.com" />
+                <data android:host="ptb.discord.com" />
+                <data android:host="canary.discord.com" />
+                <data android:host="discordapp.com" />
+                <data android:host="*.discordapp.com" />
+            </intent-filter>
+        </activity>
+    </application>
 
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
-
-      - name: Build gradle project
-        run: ./gradlew build
-
-      - name: Build APK
-        run: ./gradlew assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app
-          path: ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk
+</manifest>
