@@ -1,78 +1,44 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+name: Build APK
 
-    <!-- Permissions -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+env:
+  main_project_module: app
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher" <!-- Reverted to .png for compatibility -->
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round" <!-- Reverted to .png for compatibility -->
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        tools:targetApi="34">
+on:
 
-        <!-- Recovery Activity -->
-        <activity
-            android:name=".RecoveryActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme" />
+  push:
+    branches:
+      - '*'
+      - '!main'
+  pull_request:
+  merge_group:
+  workflow_dispatch:
 
-        <!-- Settings Activity -->
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false" />
+jobs:
+  build:
 
-        <!-- Welcome Activity -->
-        <activity
-            android:name=".WelcomeActivity"
-            android:exported="false"
-            android:theme="@style/AppTheme" />
+    runs-on: ubuntu-latest
 
-        <!-- Main Activity -->
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize|layoutDirection"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme">
-            
-            <!-- Shortcuts -->
-            <meta-data
-                android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
+    steps:
+      - uses: actions/checkout@v4
 
-            <!-- Main Intent Filter -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+      - name: Set Up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
 
-            <!-- Discord URL Handling -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:scheme="https" android:host="discord.com" />
-                <data android:scheme="http" android:host="discord.com" />
-                <data android:scheme="https" android:host="*.discord.com" />
-                <data android:scheme="http" android:host="*.discord.com" />
-                <data android:scheme="https" android:host="ptb.discord.com" />
-                <data android:scheme="http" android:host="ptb.discord.com" />
-                <data android:scheme="https" android:host="canary.discord.com" />
-                <data android:scheme="http" android:host="canary.discord.com" />
-                <data android:scheme="https" android:host="discordapp.com" />
-                <data android:scheme="http" android:host="discordapp.com" />
-                <data android:scheme="https" android:host="*.discordapp.com" />
-                <data android:scheme="http" android:host="*.discordapp.com" />
-            </intent-filter>
-        </activity>
-    </application>
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
 
-</manifest>
+      - name: Build gradle project
+        run: ./gradlew build
+
+      - name: Build APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: ${{ env.main_project_module }}/build/outputs/apk/debug/app-debug.apk
