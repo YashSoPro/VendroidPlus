@@ -1,7 +1,5 @@
-
-<?xml version="1.0" encoding="utf-8"?>
+\<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.nin0dev.vendroid">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,8 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
-        tools:targetApi="34">
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".RecoveryActivity"
             android:exported="true"
@@ -39,25 +36,19 @@
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:scheme="https" />
                 <data android:scheme="http" />
                 <data android:host="discord.com" />
-                <data android:host="*.discord.com" />
                 <data android:host="ptb.discord.com" />
                 <data android:host="canary.discord.com" />
                 <data android:host="discordapp.com" />
-                <data android:host="*.discordapp.com" />
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
