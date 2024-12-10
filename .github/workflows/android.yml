@@ -4,7 +4,6 @@ env:
   main_project_module: app
 
 on:
-
   push:
     branches:
       - '*'
@@ -15,7 +14,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -31,11 +29,14 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
-      - name: Build gradle project
-        run: ./gradlew build
+      - name: Clean the Gradle build
+        run: ./gradlew clean
 
-      - name: Build APK
-        run: ./gradlew assembleDebug
+      - name: Build Gradle project
+        run: ./gradlew build --stacktrace --info
+
+      - name: Assemble Debug APK
+        run: ./gradlew assembleDebug --stacktrace --info
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
